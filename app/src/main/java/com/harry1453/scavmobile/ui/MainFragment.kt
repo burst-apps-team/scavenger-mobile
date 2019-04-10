@@ -41,7 +41,7 @@ class MainFragment : Fragment() {
         testDataDir.mkdir()
 
         copyResourceToInternal(R.raw.config, "config.yaml", false)
-        copyResourceToInternal(R.raw.scavenger, "scavenger", true)
+        copyResourceToInternal(R.raw.scavenger_x86, "scavenger", true)
         copyResourceToInternal(R.raw.test_plot, "test_data/10282355196851764065_0_8", false)
 
         Log.e("Log", "Installed!")
