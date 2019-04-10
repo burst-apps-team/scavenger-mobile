@@ -1,13 +1,18 @@
-package com.harry1453.scavmobile
+package com.harry1453.scavmobile.ui
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.harry1453.scavmobile.R
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.ArrayList
 
@@ -19,13 +24,15 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        createDefaultNotificationChannel()
+
         main_bottomNavigationView.setOnNavigationItemSelectedListener(this)
         val adapter = PagerAdapter(supportFragmentManager)
-        adapter.addFragment(Fragment(), getString(R.string.title_home))
+        adapter.addFragment(MainFragment(), getString(R.string.title_home))
         adapter.addFragment(Fragment(), getString(R.string.title_dashboard))
         adapter.addFragment(Fragment(), getString(R.string.title_notifications))
         main_viewPager.adapter = adapter
-        main_viewPager.offscreenPageLimit = 3
+        main_viewPager.offscreenPageLimit = 2
         main_viewPager.addOnPageChangeListener(this)
         prevMenuItem = main_bottomNavigationView.getMenu().getItem(0)
     }
@@ -37,11 +44,11 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 true
             }
             R.id.navigation_dashboard -> {
-                main_viewPager.currentItem = 0
+                main_viewPager.currentItem = 1
                 true
             }
             R.id.navigation_notifications -> {
-                main_viewPager.currentItem = 0
+                main_viewPager.currentItem = 2
                 true
             }
             else -> false
@@ -56,6 +63,19 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         prevMenuItem?.isChecked = false
         main_bottomNavigationView.menu.getItem(position).isChecked = true
         prevMenuItem = main_bottomNavigationView.menu.getItem(position)
+    }
+
+    private fun createDefaultNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val id = getString(R.string.service_channel_id)
+            val name = getString(R.string.service_channel_name)
+            val description = getString(R.string.service_channel_description)
+            val importance = NotificationManager.IMPORTANCE_LOW
+            val channel = NotificationChannel(id, name, importance)
+            channel.description = description
+            val notificationManager = ContextCompat.getSystemService(this, NotificationManager::class.java)!!
+            notificationManager.createNotificationChannel(channel)
+        }
     }
 
     class PagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
