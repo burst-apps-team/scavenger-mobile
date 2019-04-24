@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
@@ -24,12 +25,14 @@ class MainFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_main, container, false)
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
-        viewModel!!.getLogFile().observe(this, androidx.lifecycle.Observer { Log.e("SCAV", it) })
 
         val startService = view.findViewById<Button>(R.id.main_startService)
         val stopService = view.findViewById<Button>(R.id.main_stopService)
         val install = view.findViewById<Button>(R.id.main_install)
         val showLog = view.findViewById<Button>(R.id.main_showLog)
+        val scavengerOutput = view.findViewById<TextView>(R.id.main_scavengerOutput)
+
+        viewModel!!.getLogFile().observe(this, androidx.lifecycle.Observer { scavengerOutput.text = it })
 
         startService.setOnClickListener { startScavengerService() }
         stopService.setOnClickListener { stopScavengerService() }
