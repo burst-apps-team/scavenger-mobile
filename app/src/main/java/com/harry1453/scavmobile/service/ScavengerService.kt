@@ -17,7 +17,7 @@ import kotlin.random.Random
 
 
 class ScavengerService : Service() {
-    var scavengerProcess: Disposable? = null
+    private var scavengerProcess: Disposable? = null
 
     override fun onBind(intent: Intent?) = null
 
@@ -72,7 +72,6 @@ class ScavengerService : Service() {
                 outputPath.delete()
             }
             outputPath.createNewFile()
-            val output = BufferedWriter(OutputStreamWriter(outputPath.outputStream()))
 
             val scavengerConfig = File(extFilesDir, "config.yaml")
             if (!scavengerConfig.exists()) throw IllegalArgumentException("Scavenger configuration not found")
@@ -87,17 +86,29 @@ class ScavengerService : Service() {
             val input = BufferedReader(InputStreamReader(scavengerProcess.inputStream))
 
             it.setCancellable {
-                output.close()
                 input.close()
                 scavengerProcess.destroy()
                 stopSelf()
             }
 
-            input.copyTo(output)
-            output.close()
+            val buffer = CharArray(8 * 1024)
+            var chars = input.read(buffer)
+            val output = StringWriter()
+            while (chars >= 0) {
+                val string = String(buffer, 0, chars)
+                output.write(string)
+                output.flush()
+                val outputFile = BufferedWriter(FileWriter(outputPath)) // TODO this is a hack...
+                outputFile.write(output.toString())
+                outputFile.flush()
+                outputFile.close()
+                chars = input.read(buffer)
+            }
+
             input.close()
-            scavengerProcess.destroy()
             Log.e("Service", "Service finished")
+            scavengerProcess.destroy()
+            Log.e("Service", "Scavenger destroyed")
             logToLog()
             stopSelf()
         }
