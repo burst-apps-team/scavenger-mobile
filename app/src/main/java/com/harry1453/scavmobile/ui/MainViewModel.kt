@@ -14,6 +14,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val logFile: MutableLiveData<String> = MutableLiveData()
     var observer: FileObserver? = null
 
+    init {
+        logFile.postValue("Scavenger Stopped")
+    }
+
     fun watchFile() {
         if (observer == null) {
             val pathToWatch = getApplication<Application>().getExternalFilesDir(null)!!.absolutePath
@@ -33,6 +37,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             observer.startWatching()
             this.observer = observer
         }
+    }
+
+    fun stopWatchingFile() {
+        observer?.stopWatching()
+        logFile.postValue("Scavenger Stopped")
+        observer = null
     }
 
     fun getLogFile() : LiveData<String> = logFile

@@ -112,5 +112,6 @@ class MainFragment : Fragment() {
 
     private fun stopScavengerService() {
         context.stopService(Intent(context, ScavengerService::class.java))
+        viewModel!!.stopWatchingFile()
     }
 }

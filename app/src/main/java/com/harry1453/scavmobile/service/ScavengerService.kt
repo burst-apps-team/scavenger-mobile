@@ -22,9 +22,7 @@ class ScavengerService : Service() {
     override fun onBind(intent: Intent?) = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.e("Service", "onStartCommand()")
         if (scavengerProcess == null) {
-            Log.e("Service", "Begin...")
             val notificationIntent = Intent(this, MainActivity::class.java)
             val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0)
 
@@ -36,11 +34,7 @@ class ScavengerService : Service() {
                 .setTicker(getText(R.string.service_notification_message))
                 .build()
 
-            Log.e("Service", "Show notification...")
-
             startForeground(Random.nextInt(), notification)
-
-            Log.e("Service", "Starting scavenger...")
 
             scavengerProcess = startScavenger()
                 .subscribeOn(Schedulers.io())
@@ -51,13 +45,7 @@ class ScavengerService : Service() {
         return START_STICKY
     }
 
-    override fun onCreate() {
-        super.onCreate()
-        Log.e("Service", "onCreate()")
-    }
-
     override fun onDestroy() {
-        Log.e("Service", "onDestroy()")
         scavengerProcess?.dispose()
         scavengerProcess = null
         super.onDestroy()
@@ -86,40 +74,28 @@ class ScavengerService : Service() {
             val input = BufferedReader(InputStreamReader(scavengerProcess.inputStream))
 
             it.setCancellable {
-                input.close()
-                scavengerProcess.destroy() // TODO destroyForcibly needed but only available from API 26
-                stopSelf()
+                scavengerProcess.destroy()
             }
 
-            val buffer = CharArray(8 * 1024)
-            var chars = input.read(buffer)
-            val output = StringWriter()
-            while (chars >= 0) {
-                val string = String(buffer, 0, chars)
-                output.write(string)
-                output.flush()
-                val outputFile = BufferedWriter(FileWriter(outputPath)) // TODO this is a hack...
-                outputFile.write(output.toString())
-                outputFile.flush()
-                outputFile.close()
-                chars = input.read(buffer)
-            }
+            try {
+                val buffer = CharArray(8 * 1024)
+                var chars = input.read(buffer)
+                val output = StringWriter()
+                while (chars >= 0) {
+                    val string = String(buffer, 0, chars)
+                    output.write(string)
+                    output.flush()
+                    val outputFile = BufferedWriter(FileWriter(outputPath)) // TODO this is a hack...
+                    outputFile.write(output.toString())
+                    outputFile.flush()
+                    outputFile.close()
+                    chars = input.read(buffer)
+                }
+            } catch (ignored: InterruptedIOException) {}
 
             input.close()
-            Log.e("Service", "Service finished")
             scavengerProcess.destroy()
-            Log.e("Service", "Scavenger destroyed")
-            logToLog()
             stopSelf()
         }
-    }
-
-    private fun logToLog() {
-        val logFile = File(getExternalFilesDir(null), "output.txt")
-        val output = StringWriter()
-        val input = InputStreamReader(logFile.inputStream())
-        input.copyTo(output)
-        input.close()
-        Log.e("Service", "Output was $output")
     }
 }

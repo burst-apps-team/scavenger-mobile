@@ -54,7 +54,14 @@ class ConfigureFragment : Fragment() {
             passphrase = newPassphrase
         }
 
+        val plotFiles = StringBuilder()
+        for (i in 0 until config.plot_dirs.size) {
+            if (i != 0) plotFiles.append('\n')
+            plotFiles.append(config.plot_dirs[i])
+        }
+
         configure_passphrase.setText(passphrase)
+        configure_plotfiles.setText(plotFiles)
         configure_url.setText(config.url)
         configure_target_deadline.setText(config.target_deadline.toString())
     }
@@ -68,8 +75,6 @@ class ConfigureFragment : Fragment() {
             val plotFiles = StringTokenizer(configure_plotfiles.text.toString(), "\n")
             val url = configure_url.text.toString()
             val targetDeadline = BigInteger(configure_target_deadline.text.toString())
-
-
 
             if (uint64Max > targetDeadline) {
                 Toast.makeText(context, "Target deadline must be less than 2^16", Toast.LENGTH_LONG).show()
