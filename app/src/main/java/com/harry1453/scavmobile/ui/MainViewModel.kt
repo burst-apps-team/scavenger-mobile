@@ -2,7 +2,6 @@ package com.harry1453.scavmobile.ui
 
 import android.app.Application
 import android.os.FileObserver
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

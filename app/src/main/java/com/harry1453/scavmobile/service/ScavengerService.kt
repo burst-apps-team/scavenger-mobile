@@ -87,7 +87,7 @@ class ScavengerService : Service() {
 
             it.setCancellable {
                 input.close()
-                scavengerProcess.destroy()
+                scavengerProcess.destroy() // TODO destroyForcibly needed but only available from API 26
                 stopSelf()
             }
 

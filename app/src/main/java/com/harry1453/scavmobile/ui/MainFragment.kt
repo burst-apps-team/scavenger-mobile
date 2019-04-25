@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.harry1453.scavmobile.R
 import com.harry1453.scavmobile.service.ScavengerService
+import kotlinx.android.synthetic.main.fragment_main.*
 import java.io.*
 import java.util.*
 
@@ -22,26 +23,20 @@ class MainFragment : Fragment() {
 
     private var viewModel: MainViewModel? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_main, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
+            = inflater.inflate(R.layout.fragment_main, container, false)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
 
-        val startService = view.findViewById<Button>(R.id.main_startService)
-        val stopService = view.findViewById<Button>(R.id.main_stopService)
-        val install = view.findViewById<Button>(R.id.main_install)
-        val showLog = view.findViewById<Button>(R.id.main_showLog)
-        val scavengerOutput = view.findViewById<TextView>(R.id.main_scavengerOutput)
+        viewModel!!.getLogFile().observe(this, androidx.lifecycle.Observer { main_scavengerOutput.text = it })
 
-        viewModel!!.getLogFile().observe(this, androidx.lifecycle.Observer { scavengerOutput.text = it })
-
-        startService.setOnClickListener { startScavengerService() }
-        stopService.setOnClickListener { stopScavengerService() }
-        install.setOnClickListener { installScavenger() }
-        showLog.setOnClickListener { showLog() }
+        main_startService.setOnClickListener { startScavengerService() }
+        main_stopService.setOnClickListener { stopScavengerService() }
+        main_install.setOnClickListener { installScavenger() }
+        main_showLog.setOnClickListener { showLog() }
 
         Log.e("MainFragment", "ABI is " + Arrays.toString(Build.SUPPORTED_ABIS))
-
-        return view
     }
 
     private fun installScavenger() {
@@ -66,7 +61,6 @@ class MainFragment : Fragment() {
         input.close()
         out.close()
     }
-
 
     @Throws(IOException::class)
     fun copyDirectory(sourceLocation: File, targetLocation: File) {

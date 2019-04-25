@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         main_bottomNavigationView.setOnNavigationItemSelectedListener(this)
         val adapter = PagerAdapter(supportFragmentManager)
         adapter.addFragment(MainFragment(), getString(R.string.title_home))
-        adapter.addFragment(Fragment(), getString(R.string.title_dashboard))
+        adapter.addFragment(ConfigureFragment(), getString(R.string.title_dashboard))
         adapter.addFragment(Fragment(), getString(R.string.title_notifications))
         main_viewPager.adapter = adapter
         main_viewPager.offscreenPageLimit = 2
