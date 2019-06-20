@@ -24,20 +24,34 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:hint="Plot Files (one per line)"
-            android:layout_marginTop="10dp"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/configure_plotfiles"
-                android:inputType="textMultiLine"
-                android:layout_width="match_parent"
+            <com.google.android.material.textfield.TextInputLayout
+                android:hint="Plot Files (one per line)"
+                android:layout_marginTop="10dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/configure_plotfiles"
+                    android:inputType="textMultiLine"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/configure_add_plotfile"
+                android:text="Add"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
-
-        </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:hint="Pool / Node URL"

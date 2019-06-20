@@ -8,8 +8,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
@@ -43,8 +41,22 @@ class MainFragment : Fragment() {
         val testDataDir = File(context.getExternalFilesDir(null), "test_data/")
         testDataDir.mkdir()
 
+        val abis = Build.SUPPORTED_ABIS
+        if (abis.isEmpty()) {
+            Toast.makeText(context, "Could not determine your device's architecture.", Toast.LENGTH_LONG).show()
+        }
+        val abi = abis[0].toLowerCase(Locale.ENGLISH)
+        val scavengerResource = when(abi) {
+            "x86" -> R.raw.scavenger_x86
+            "arm64-v8a" -> R.raw.scavenger_aarch64
+            else -> {
+                Toast.makeText(context, "Architecture $abi not supported.", Toast.LENGTH_LONG).show()
+                return
+            }
+        }
+
         copyResourceToInternal(R.raw.config, "config.yaml", false)
-        copyResourceToInternal(R.raw.scavenger_x86, "scavenger", true)
+        copyResourceToInternal(scavengerResource, "scavenger", true)
         copyResourceToInternal(R.raw.test_plot, "test_data/10282355196851764065_0_8", false)
 
         Log.e("Log", "Installed!")

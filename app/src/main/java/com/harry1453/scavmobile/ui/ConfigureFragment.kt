@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import burst.kit.burst.BurstCrypto
-import com.harry1453.scavmobile.R
 import com.harry1453.scavmobile.entity.ScavengerConfiguration
 import kotlinx.android.synthetic.main.fragment_configure.*
 import org.yaml.snakeyaml.error.YAMLException
@@ -17,6 +16,11 @@ import java.io.IOException
 import java.lang.Exception
 import java.math.BigInteger
 import java.util.*
+import android.content.Intent
+import android.app.Activity
+import com.harry1453.scavmobile.R
+import com.harry1453.scavmobile.util.PathUtils
+
 
 class ConfigureFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
@@ -24,6 +28,7 @@ class ConfigureFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         configure_save.setOnClickListener { saveConfig() }
+        configure_add_plotfile.setOnClickListener { pickFile() }
         loadConfig()
     }
 
@@ -76,7 +81,7 @@ class ConfigureFragment : Fragment() {
             val url = configure_url.text.toString()
             val targetDeadline = BigInteger(configure_target_deadline.text.toString())
 
-            if (uint64Max > targetDeadline) {
+            if (uint64Max < targetDeadline) {
                 Toast.makeText(context, "Target deadline must be less than 2^16", Toast.LENGTH_LONG).show()
                 return
             }
@@ -95,10 +100,30 @@ class ConfigureFragment : Fragment() {
             configFileWriter.write(config.toYaml())
             configFileWriter.close()
 
-            // TODO toast saved
+            Toast.makeText(context, "Saved!", Toast.LENGTH_LONG).show()
         } catch (e: Exception) {
             e.printStackTrace()
             Toast.makeText(context, "Failed to save configuration", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    fun pickFile() {
+        val intent = Intent()
+            .setType("*/*")
+            .setAction(Intent.ACTION_GET_CONTENT)
+
+        startActivityForResult(Intent.createChooser(intent, "Select a plot file"), 123)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == 123 && resultCode == Activity.RESULT_OK && data != null) {
+            val uri = data.data
+            var path = PathUtils.getPath(context, uri)
+            if (configure_plotfiles.text?.isBlank() == true) {
+                configure_plotfiles.setText(path)
+            } else {
+                configure_plotfiles.setText(configure_plotfiles.text.toString() + "\n" + path)
+            }
         }
     }
 }
