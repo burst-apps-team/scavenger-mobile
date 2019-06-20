@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import burst.kit.burst.BurstCrypto
+import burst.kit.crypto.BurstCrypto
 import com.harry1453.scavmobile.entity.ScavengerConfiguration
 import kotlinx.android.synthetic.main.fragment_configure.*
 import org.yaml.snakeyaml.error.YAMLException
